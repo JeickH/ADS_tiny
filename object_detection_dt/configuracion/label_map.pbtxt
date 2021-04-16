@@ -1,0 +1,36 @@
+item{
+  id:1
+  name:'vehiculo'
+}
+item{
+  id:2
+  name:'semaforo rojo'
+}
+item{
+  id:3
+  name:'semaforo amarillo'
+}
+item{
+  id:4
+  name:'semaforo verde'
+}
+item{
+  id:5
+  name:'pato'
+}
+item{
+  id:6
+  name:'linea de pare'
+}
+item{
+  id:7
+  name:'aviso de pare'
+}
+item{
+  id:8
+  name:'cruce en t'
+}
+item{
+  id:9
+  name:'aviso de semaforo'
+}

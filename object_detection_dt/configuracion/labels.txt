@@ -1,0 +1,10 @@
+null
+vehiculo
+semaforo rojo
+semaforo amarillo
+semaforo verde
+pato
+linea de pare
+aviso de pare
+cruce en t
+aviso de semaforo
