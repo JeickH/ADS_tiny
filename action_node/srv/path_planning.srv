@@ -1,0 +1,6 @@
+string instruction
+string scene
+float32[] objects
+bool animation
+---
+float32[] path

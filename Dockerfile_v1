@@ -1,0 +1,41 @@
+# The base image
+FROM duckietown/rpi-duckiebot-base:master19
+
+RUN rm -r /workspace; mkdir /workspace
+WORKDIR /workspace
+
+#### START CUSTOM CATKIN_WS ####
+RUN /bin/bash -c "mkdir -p custom_ws/src/"
+
+### Installation of dependencies
+#RUN /bin/bash -c "pip2 install -r requirements.txt"
+#ENV TF_CPP_MIN_LOG_LEVEL=2
+
+# Installation of our program
+COPY action_node custom_ws/src/action_node
+#COPY requirements.txt requirements.txt
+#RUN /bin/bash -c "cat /etc/os-release"
+RUN /bin/bash -c "pip install --upgrade pip"
+RUN /bin/bash -c "pip install wheel"
+RUN pip install Cython
+RUN pip install h5py==2.9.0
+RUN /bin/bash -c "pip install enum34 --ignore-installed enum34"
+
+
+#RUN /bin/bash -c "python -m pip install --no-cache-dir --upgrade https://storage.googleapis.com/tensorflow/raspberrypi/tensorflow-1.14.0-cp27-none-linux_armv7l.whl"
+RUN /bin/bash -c "pip install --no-cache-dir --upgrade https://storage.googleapis.com/tensorflow/raspberrypi/tensorflow-1.14.0-cp27-none-linux_armv7l.whl"
+COPY object_detection_dt custom_ws/src/object_detection_dt
+
+RUN chmod +x custom_ws/src/object_detection_dt/scripts/object_detection_node.py
+RUN chmod +x custom_ws/src/action_node/scripts/action_node1.py
+RUN chmod +x custom_ws/src/action_node/scripts/path_planning_server.py
+
+RUN /bin/bash -c "source /home/software/catkin_ws/devel/setup.bash && catkin_init_workspace && cd ../.."
+RUN /bin/bash -c "source /home/software/catkin_ws/devel/setup.bash && catkin_make -j -C custom_ws/"
+
+RUN echo "source custom_ws/devel/setup.bash" >> ~/.bashrc
+
+
+# Setting the program as the default
+#CMD /bin/bash hello.py
+CMD ["/bin/bash", "-c", "source custom_ws/devel/setup.bash && roslaunch action_node ads_program.launch"]

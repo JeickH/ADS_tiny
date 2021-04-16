@@ -1,0 +1,13 @@
+<!--  roslaunch my_system_launch.launch duckie:="duckiebot9" -->
+<!--arg name="duckie"/-->
+<!--node name="republish" type="republish" pkg="image_transport" output="screen" args="compressed in:=duckiebot9/image_transformer_node/corrected_image raw out:=/corrected_image_decompressed" /-->
+
+<launch>
+	<node name="obj_det" pkg="object_detection_dt" type="object_detection_node.py" output="screen">
+    </node>
+	<node name="action" pkg="action_node" type="action_node1.py" output="screen">
+    </node>
+    <node pkg="action_node" type="path_planning_server.py" name="pathPlanningServer">
+    </node>
+    <node name="republish" type="republish" pkg="image_transport" output="screen" args="compressed in:=duckiebot2/camera_node/image raw out:=duckiebot2/camera_node/image/raw" />
+</launch>

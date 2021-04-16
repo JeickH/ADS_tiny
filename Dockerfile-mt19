@@ -1,0 +1,61 @@
+# The base image
+FROM duckietown/rpi-duckiebot-base:master19
+#FROM resin/rpi-raspbian
+
+RUN rm -r /workspace; mkdir /workspace
+WORKDIR /workspace
+
+#### START CUSTOM CATKIN_WS ####
+RUN /bin/bash -c "mkdir -p custom_ws/src/"
+RUN /bin/bash -c "mkdir -p custom_ws/src/object_detection_dt"
+ENV TF_CPP_MIN_LOG_LEVEL=2
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update
+#RUN apt-get install -y python
+RUN python --version
+#RUN apt-get install python-pip
+RUN python -m pip install pip==20.3.3
+
+# Installation of our program
+#COPY requirements.txt requirements.txt
+COPY action_node custom_ws/src/action_node
+COPY object_detection_dt/configuracion custom_ws/src/object_detection_dt/configuracion
+COPY object_detection_dt/modelo_congelado custom_ws/src/object_detection_dt/modelo_congelado
+COPY object_detection_dt/msg custom_ws/src/object_detection_dt/msg
+COPY object_detection_dt/scripts custom_ws/src/object_detection_dt/scripts
+COPY object_detection_dt/utils custom_ws/src/object_detection_dt/utils
+COPY object_detection_dt/CMakeLists.txt custom_ws/src/object_detection_dt/CMakeLists.txt
+COPY object_detection_dt/package.xml custom_ws/src/object_detection_dt/package.xml
+
+RUN /bin/bash -c "cat /etc/os-release"
+RUN /bin/bash -c "pip install --upgrade pip"
+#RUN /bin/bash -c "pip install -r requirements.txt"
+RUN /bin/bash -c "pip install wheel"
+RUN pip install Cython
+#RUN pip install -U setuptools
+RUN /bin/bash -c "pip install --upgrade pip setuptools wheel"
+#RUN pip install numpy
+RUN pip install h5py==2.9.0
+RUN /bin/bash -c "pip install enum34 --ignore-installed enum34"
+#INSTALL TENSORFLOW 1.14.0
+#RUN pip install tensorflow==1.14.0
+#RUN export TMPDIR='/var/tmp'
+#RUN mount -t tmpfs tmpfs /tmp
+#RUN mkdir $HOME/tmp
+#RUN export TMPDIR=$HOME/tmp
+RUN /bin/bash -c "TMPDIR=/folder/address/here/ pip install --no-cache-dir --build /folder/address/here/ --upgrade https://storage.googleapis.com/tensorflow/raspberrypi/tensorflow-1.14.0-cp27-none-linux_armv7l.whl"
+
+#RUN /bin/bash -c "pip install --no-cache-dir --upgrade https://storage.googleapis.com/tensorflow/raspberrypi/tensorflow-1.14.0-cp27-none-linux_armv7l.whl"
+RUN echo FUNCIONOOOOO
+#RUN /bin/bash -c "pip install --no-cache-dir --upgrade https://www.piwheels.org/simple/tensorflow/tensorflow-1.14.0-cp27-none-linux_armv7l.whl
+
+RUN chmod +x custom_ws/src/object_detection_dt/scripts/object_detection_node.py
+RUN chmod +x custom_ws/src/action_node/scripts/action_node1.py
+RUN chmod +x custom_ws/src/action_node/scripts/path_planning_server.py
+
+RUN /bin/bash -c "source /home/software/catkin_ws/devel/setup.bash && catkin_init_workspace && cd ../.."
+RUN /bin/bash -c "source /home/software/catkin_ws/devel/setup.bash && catkin_make -j -C custom_ws/"
+
+RUN echo "source custom_ws/devel/setup.bash" >> ~/.bashrc
+
+CMD ["/bin/bash", "-c", "source custom_ws/devel/setup.bash && roslaunch action_node ads_program.launch"]

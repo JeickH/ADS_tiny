@@ -1,0 +1,57 @@
+#FROM duckietown/rpi-duckiebot-base:master19-no-arm
+FROM duckietown/rpi-duckiebot-base:master19
+
+# DO NOT MODIFY: your submission won't run if you do
+RUN apt-get update -y && apt-get install -y --no-install-recommends gcc
+RUN apt-get install -y --no-install-recommends libc-dev
+RUN apt-get install -y --no-install-recommends git
+RUN apt-get install -y --no-install-recommends bzip2
+RUN apt-get install -y --no-install-recommends python-tk
+RUN apt-get install -y --no-install-recommends python-wheel
+RUN apt-get install -y --no-install-recommends python-pip
+RUN rm -rf /var/lib/apt/lists/*
+
+WORKDIR /workspace
+
+#MEMORY ISSUE
+ENV TF_CPP_MIN_LOG_LEVEL=2
+
+# here, we install the requirements, some requirements come by default
+# you can add more if you need to in requirements.txt
+RUN /bin/bash -c "pip install --upgrade pip"
+#RUN /bin/bash -c "pip install setuptools"
+#COPY requirements.txt .
+#RUN pip install -r requirements.txt
+#RUN pip install -e git://github.com/AndreaCensi/zuper-nodes-python2.git@z2#egg=zuper-nodes-python2
+#RUN pip install cbor2
+
+#INSTALL REQUIREMENTS 
+RUN /bin/bash -c "cat /etc/os-release"
+#RUN /bin/bash -c "pip install wheel"
+RUN pip install Cython
+RUN pip install h5py==2.9.0
+RUN /bin/bash -c "pip install enum34 --ignore-installed enum34"
+RUN /bin/bash -c "python -m pip install --no-cache-dir --upgrade https://storage.googleapis.com/tensorflow/raspberrypi/tensorflow-1.14.0-cp27-none-linux_armv7l.whl"
+
+COPY action_node ./
+COPY object_detection_dt ./
+
+RUN /bin/bash -c "export PYTHONPATH="/usr/local/lib/python2.7/dist-packages:$PYTHONPATH""
+
+ENV HOSTNAME=default
+
+ENV DISABLE_CONTRACTS=1
+#DESDE SOLUTION.PY SE HACE EL ROSLAUNCH
+CMD ["python", "solution.py"]
+
+#SI NO FUNCIONA DE ESTA MANERA, SE PUEDE INTENTAR POR EL LADO DEL CATKIN MAKE
+#DESCOMENTANDO ESTA SECCION
+
+#RUN /bin/bash -c "mkdir -p custom_ws/src/"
+#COPY action_node custom_ws/src/
+#COPY object_detection_dt custom_ws/src/
+#RUN /bin/bash -c "source /home/software/catkin_ws/devel/setup.bash && catkin_init_workspace && cd ../.."
+#RUN /bin/bash -c "source /home/software/catkin_ws/devel/setup.bash && catkin_make -j -C custom_ws/"
+#RUN echo "source custom_ws/devel/setup.bash" >> ~/.bashrc
+#CMD ["/bin/bash", "-c", "source custom_ws/devel/setup.bash && roslaunch action_node ads_program.launch"]
+

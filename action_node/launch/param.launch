@@ -1,0 +1,6 @@
+<launch>
+	<arg name="duckie"/>
+	<node name="obj_det" pkg="action_node" type="simple_instruction.py" output="screen" required="true">
+	<param name="veh" value="duckiebot5"/>
+    </node>
+</launch>

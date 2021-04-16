@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<launch>
+	<node name="obj_det" pkg="object_detection_dt" type="object_detection_node.py" output="screen">
+    </node>
+    <node name="action" pkg="action_node" type="action_node1.py" output="screen">
+    </node>
+    <node pkg="action_node" type="path_planning_server.py" name="pathPlanningServer">
+    </node>
+</launch>
