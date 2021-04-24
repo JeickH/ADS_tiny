@@ -449,6 +449,8 @@ class action():
                 print('INTERSECTION DONE')
                 self.execute_path=False
                 ind=1
+                #UNCOMMENT IND 0 AND COMMENT IND 1 FOR LANE FOLLOWING CONTROL AFTER INTERSECTION DONE
+                #ind=0
                 self.activate_nodes(ind)
                 self.in_scene=False
                 self.path_ready=False
